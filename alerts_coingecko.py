@@ -1,4 +1,5 @@
 import requests # Librería solicitudes HTTP
+from twilio.rest import Client # Se importa la clase Client desde la librería de Twilio
 
 # URL de la API de CoinGecko y parámetos para el consumo de la API CoinGecko 
 url = "https://api.coingecko.com/api/v3/simple/price"
@@ -47,6 +48,26 @@ def value_prices():
             alert_msg += f" Binancecoin ha superado los $3000 USD, su precio actual es: ${binancecoin_price}\n"
     
     print(alert_msg)
+    return alert_msg
+
+# Función para enviar la alerta por WhatsApp 
+def send_alert(alert_msg):
+
+    # Reqisitos para utilizar Twilio 
+    account_sid = 'Inserta tu account_sid de Twilio' # Credencial que actúa como nombre de usuario
+    auth_token = 'Inserta tu auth_token' # Identificador único de la cuenta de Twilio 
+    client = Client(account_sid, auth_token)
+
+    # Se realiza el envio de la notificación 
+    message = client.messages.create(
+    from_='whatsapp:+14155238886', # Número de WhatsApp de Twilio
+    body=alert_msg,
+    to='whatsapp:+573204693533' # Número de WhatsApp destino
+)
+
+    print(message.sid)
+    
 
 if __name__ == "__main__":
-    value_prices()
+    alert_msg = value_prices() 
+    send_alert(alert_msg)
