@@ -9,6 +9,19 @@ PARAMS = {
     'vs_currencies': 'usd'
 }
 
+# Reqisitos para utilizar Twilio 
+account_sid = 'inserta tu account_sid de Twilio' # Credencial que actúa como nombre de usuario
+auth_token = 'inserta tu auth_token' # Identificador único de la cuenta de Twilio 
+num_from = 'whatsapp:+14155238886' # Número de WhatsApp de Twilio
+num_to = 'whatsapp:+573204693533'  # Número de WhatsApp destino
+
+# Se almacena los precios de validación para cada criptomoneda
+coll_crypto = {
+    'bitcoin': 30000,
+    'ethereum': 2000,
+    'binancecoin':300
+}
+
 # Funcion que realiza la solicitud GET a la API
 def get_prices(): 
     try:
@@ -37,37 +50,30 @@ def value_prices():
         ethereum_price = prices.get('ethereum', {}).get('usd')
         binancecoin_price = prices.get('binancecoin', {}).get('usd')
         
-        # Validación del los datos
-        if bitcoin_price and bitcoin_price > 63000:
-            alert_msg += f" Bitcoin ha superado los $30,000 USD, su precio actual es: ${bitcoin_price}\n"
+        # Validación del los datos, se recorre cada valor
+        for crypto,valuecrypto in coll_crypto.items():
+            current_price = prices.get(crypto, {}).get('usd') #Se obtiene el precio actual
+            if current_price and current_price > valuecrypto: # Se condiciona los datos para el envio de alerta
+                alert_msg += f"⚠️ {crypto.capitalize()} ha superado los: ${valuecrypto:,} USD, su Precio actual: ${current_price:,} USD.\n"
 
-        if ethereum_price and ethereum_price > 2000:
-            alert_msg += f" Ethereum ha superado los $2,0000 USD, su precio actual es: ${ethereum_price}\n"
-
-        if binancecoin_price and binancecoin_price > 500:
-            alert_msg += f" Binancecoin ha superado los $3000 USD, su precio actual es: ${binancecoin_price}\n"
-    
     print(alert_msg)
     return alert_msg
 
 # Función para enviar la alerta por WhatsApp 
 def send_alert(alert_msg):
 
-    # Reqisitos para utilizar Twilio 
-    account_sid = 'Inserta tu account_sid de Twilio' # Credencial que actúa como nombre de usuario
-    auth_token = 'Inserta tu auth_token' # Identificador único de la cuenta de Twilio 
-    client = Client(account_sid, auth_token)
+    if alert_msg:
+        # Se inicia la cuenta de Twilio con la credenciales
+        client = Client(account_sid, auth_token)
 
-    # Se realiza el envio de la notificación 
-    message = client.messages.create(
-    from_='whatsapp:+14155238886', # Número de WhatsApp de Twilio
-    body=alert_msg,
-    to='whatsapp:+573204693533' # Número de WhatsApp destino
-)
-
-    print(message.sid)
+        # Se realiza el envio de la notificación 
+        message = client.messages.create(
+        from_=num_from, # Número de WhatsApp de Twilio
+        body=alert_msg,
+        to=num_to # Número de WhatsApp destino
+        )
+        print(message.sid)
     
-
 if __name__ == "__main__":
     alert_msg = value_prices() 
     send_alert(alert_msg)
