@@ -133,6 +133,8 @@ Después de una breve demora, recibirás el mensaje de texto en tu teléfono.
 En el script encontraras el siguiente código
 ![](./Media/twilio_3.png)
 
-Debes configurar el código con las credenciales dadas al momento de crear tu cuenta twilio, despues de ejecutado el código te debe llegar un mensaje al número configurado de WhatsApp.
+Debes configurar el código con las credenciales dadas al momento de crear tu cuenta twilio. 
+Despues de ejecutado el código te debe llegar un mensaje al número configurado de WhatsApp.
+
 ![](./Media/resultado.jpg)
 
