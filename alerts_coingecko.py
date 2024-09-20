@@ -1,5 +1,6 @@
 import requests # Librería solicitudes HTTP
 from twilio.rest import Client # Se importa la clase Client desde la librería de Twilio
+import time
 
 # URL de la API de CoinGecko y parámetos para el consumo de la API CoinGecko 
 url = "https://api.coingecko.com/api/v3/simple/price"
@@ -10,8 +11,8 @@ PARAMS = {
 }
 
 # Reqisitos para utilizar Twilio 
-account_sid = 'inserta tu account_sid de Twilio' # Credencial que actúa como nombre de usuario
-auth_token = 'inserta tu auth_token' # Identificador único de la cuenta de Twilio 
+account_sid = 'Inserta tu account_sid de Twilio' # Credencial que actúa como nombre de usuario
+auth_token = 'Inserta tu auth_token' # Identificador único de la cuenta de Twilio
 num_from = 'whatsapp:+14155238886' # Número de WhatsApp de Twilio
 num_to = 'whatsapp:+573204693533'  # Número de WhatsApp destino
 
@@ -21,6 +22,9 @@ coll_crypto = {
     'ethereum': 2000,
     'binancecoin':300
 }
+
+# Precios anteriores
+prices_ant = {}
 
 # Funcion que realiza la solicitud GET a la API
 def get_prices(): 
@@ -38,13 +42,12 @@ def get_prices():
             return None
 
 def value_prices():
+
     # Se obtiene el JSON con los datos 
     prices = get_prices()
     
     # Se continua con el proceso si la funcion retorna datos validos
     if prices:
-
-        alert_msg = ""
 
         bitcoin_price  = prices.get('bitcoin', {}).get('usd')
         ethereum_price = prices.get('ethereum', {}).get('usd')
@@ -73,7 +76,12 @@ def send_alert(alert_msg):
         to=num_to # Número de WhatsApp destino
         )
         print(message.sid)
-    
+
+def main():
+    while True:
+        alert_msg = value_prices() 
+        send_alert(alert_msg)
+        time.sleep(10)
+
 if __name__ == "__main__":
-    alert_msg = value_prices() 
-    send_alert(alert_msg)
+    main()
