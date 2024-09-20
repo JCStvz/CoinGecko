@@ -134,5 +134,3 @@ En el script encontraras el siguiente código
 ![](./Media/twilio_3.png)
 
 Debes configurar el código con las credenciales dadas al momento de crear tu cuenta twilio
-
-![](./Media/twilio_2.png)
