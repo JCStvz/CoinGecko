@@ -42,22 +42,28 @@ def get_prices():
             return None
 
 def value_prices():
-
+    
+    alert_msg = ""
+    # Indicamos que la variable iniciada fuera de la función es global y no local
+    global prices_ant 
     # Se obtiene el JSON con los datos 
     prices = get_prices()
-    
+
     # Se continua con el proceso si la funcion retorna datos validos
     if prices:
-
-        bitcoin_price  = prices.get('bitcoin', {}).get('usd')
-        ethereum_price = prices.get('ethereum', {}).get('usd')
-        binancecoin_price = prices.get('binancecoin', {}).get('usd')
+        flag_price = False
         
         # Validación del los datos, se recorre cada valor
         for crypto,valuecrypto in coll_crypto.items():
             current_price = prices.get(crypto, {}).get('usd') #Se obtiene el precio actual
             if current_price and current_price > valuecrypto: # Se condiciona los datos para el envio de alerta
-                alert_msg += f"⚠️ {crypto.capitalize()} ha superado los: ${valuecrypto:,} USD, su Precio actual: ${current_price:,} USD.\n"
+                if crypto not in prices_ant or current_price != prices_ant[crypto]: # Se valida si hay registros anteriores para comparar cambios
+                    flag_price = True
+                    alert_msg += f"⚠️ {crypto.capitalize()} ha superado los: ${valuecrypto:,} USD, su Precio actual: ${current_price:,} USD.\n"
+
+        # Se guada el precio de cada criptomoneda de la consulta actual
+        if flag_price:
+            prices_ant = {crypto: prices.get(crypto, {}).get('usd') for crypto in coll_crypto}
 
     print(alert_msg)
     return alert_msg
@@ -80,8 +86,9 @@ def send_alert(alert_msg):
 def main():
     while True:
         alert_msg = value_prices() 
-        send_alert(alert_msg)
-        time.sleep(10)
+        if alert_msg:
+            send_alert(alert_msg)
+            time.sleep(600)
 
 if __name__ == "__main__":
     main()
