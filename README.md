@@ -131,7 +131,7 @@ Después de una breve demora, recibirás el mensaje de texto en tu teléfono.
 ## Apreciaciones para ejecutar el script
 
 En el script encontraras el siguiente código
-![](./Media/twilio_1.png)
+![](./Media/twilio_3.png)
 
 Debes configurar el código con las credenciales dadas al momento de crear tu cuenta twilio
 
